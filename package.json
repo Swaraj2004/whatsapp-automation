@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.26.1-alpha.3",
+    "xlsx": "^0.18.5"
+  },
+  "bin": "script.js",
+  "pkg": {
+    "scripts": "script.js",
+    "assets": [
+      "utils.js",
+      "consts.js"
+    ],
+    "targets": [
+      "node18-win-x64"
+    ]
+  }
+}
