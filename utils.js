@@ -55,12 +55,29 @@ function askQuestion(query) {
 
 async function saveGroupsToExcel() {
   const chats = await getClient().getChats();
-  const groups = chats
-    .filter((chat) => chat.isGroup)
-    .map((chat) => ({
-      name: chat.name,
-      group_id: chat.id._serialized,
-    }));
+  const groups = [];
+
+  for (const chat of chats) {
+    if (chat.isGroup) {
+      let inviteLink = "N/A";
+
+      try {
+        inviteLink = `https://chat.whatsapp.com/${await chat.getInviteCode()}`;
+      } catch (error) {
+        console.log(
+          `⚠️ Failed to get invite link for ${chat.name}: ${error.message}`
+        );
+      }
+
+      groups.push({
+        name: chat.name,
+        group_id: chat.id._serialized,
+        invite_link: inviteLink,
+      });
+
+      await delayRandom();
+    }
+  }
 
   if (groups.length === 0) {
     console.log("❌ No groups found!");
