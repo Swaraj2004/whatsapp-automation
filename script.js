@@ -1,7 +1,7 @@
 const fs = require("fs");
 const qrcode = require("qrcode-terminal");
 const { Client, LocalAuth } = require("whatsapp-web.js");
-
+const { askQuestion } = require("./utils.js");
 const {
   BASE_DIR,
   CHROME_PATH,
@@ -10,16 +10,14 @@ const {
   MEDIA_DIR,
   SESSION_PATH,
 } = require("./consts.js");
-
 const {
-  askQuestion,
   getContactsFromMultipleGroups,
   getGroupContacts,
   logout,
   saveContactsToExcel,
   saveGroupsToExcel,
   sendMessagesFromExcel,
-} = require("./utils.js");
+} = require("./controllers.js");
 
 // Ensure the directorys exists
 if (!fs.existsSync(BASE_DIR)) fs.mkdirSync(BASE_DIR);
@@ -44,8 +42,8 @@ client.on("ready", async () => {
   while (true) {
     const action = await askQuestion(
       "\nChoose an option:\n" +
-        "1. Save Groups Data to Excel\n" +
-        "2. Save Contacts Data to Excel\n" +
+        "1. Save Contacts Data to Excel\n" +
+        "2. Save Groups Data to Excel\n" +
         "3. Get Contacts from a Specific Group\n" +
         "4. Get Contacts from Multiple Groups\n" +
         "5. Send Messages / Media to Contacts from Excel\n" +
@@ -55,8 +53,8 @@ client.on("ready", async () => {
         "Enter your choice (1-8): "
     );
 
-    if (action === "1") await saveGroupsToExcel();
-    else if (action === "2") await saveContactsToExcel();
+    if (action === "1") await saveContactsToExcel();
+    else if (action === "2") await saveGroupsToExcel();
     else if (action === "3") await getGroupContacts();
     else if (action === "4") await getContactsFromMultipleGroups();
     else if (action === "5")
