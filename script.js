@@ -17,6 +17,7 @@ const {
   saveContactsToExcel,
   saveGroupsToExcel,
   sendMessagesFromExcel,
+  deleteSentMessages,
 } = require("./controllers.js");
 
 // Ensure the directorys exists
@@ -48,9 +49,10 @@ client.on("ready", async () => {
         "4. Get Contacts from Multiple Groups\n" +
         "5. Send Messages / Media to Contacts from Excel\n" +
         "6. Send Messages / Media to Groups from Excel\n" +
-        "7. Logout\n" +
-        "8. Exit\n\n" +
-        "Enter your choice (1-8): "
+        "7. Delete Last Sent Messages (Delete for Everyone)\n" +
+        "8. Logout\n" +
+        "9. Exit\n\n" +
+        "Enter your choice (1-9): "
     );
 
     if (action === "1") await saveContactsToExcel();
@@ -61,8 +63,9 @@ client.on("ready", async () => {
       await sendMessagesFromExcel(CONTACTS_FILE, "user_id");
     else if (action === "6")
       await sendMessagesFromExcel(GROUPS_FILE, "group_id");
-    else if (action === "7") await logout();
-    else if (action === "8") {
+    else if (action === "7") await deleteSentMessages();
+    else if (action === "8") await logout();
+    else if (action === "9") {
       console.log("👋 Exiting...");
       process.exit();
     } else console.log("❌ Invalid choice! Please try again.");

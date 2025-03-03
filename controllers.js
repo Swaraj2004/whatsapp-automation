@@ -6,6 +6,8 @@ const {
   getRandomInt,
   getMediaFiles,
   getClient,
+  saveSentMessages,
+  loadSentMessages,
 } = require("./utils.js");
 
 const {
@@ -157,6 +159,9 @@ async function getContactsFromMultipleGroups() {
   console.log(`✅ Contacts saved to ${MULTIPLE_GROUP_CONTACTS_FILE}`);
 }
 
+// Store sent messages
+let sentMessages = loadSentMessages();
+
 async function sendMessagesFromExcel(fileName, idColumn) {
   if (!fs.existsSync(fileName)) {
     console.log(
@@ -185,14 +190,26 @@ async function sendMessagesFromExcel(fileName, idColumn) {
   for (const entry of entries) {
     try {
       if (message) {
-        await getClient().sendMessage(entry[idColumn], message);
+        const sentMsg = await getClient().sendMessage(entry[idColumn], message);
         console.log(`✅ Message sent to '${entry.name}'`);
+
+        sentMessages.push({
+          chatId: entry[idColumn],
+          msgId: sentMsg.id._serialized,
+        });
+        saveSentMessages(sentMessages);
         await delayRandom();
       }
 
       for (const media of mediaFiles) {
         console.log(`🖼️ Sending media: ${media.filename} to ${entry.name}`);
-        await getClient().sendMessage(entry[idColumn], media);
+        const sentMedia = await getClient().sendMessage(entry[idColumn], media);
+
+        sentMessages.push({
+          chatId: entry[idColumn],
+          msgId: sentMedia.id._serialized,
+        });
+        saveSentMessages(sentMessages);
         await delayRandom();
       }
 
@@ -209,6 +226,42 @@ async function sendMessagesFromExcel(fileName, idColumn) {
       );
     }
   }
+}
+
+async function deleteSentMessages() {
+  sentMessages = loadSentMessages();
+
+  if (sentMessages.length === 0) {
+    console.log("❌ No messages to delete!");
+    return;
+  }
+
+  for (const { chatId, msgId } of sentMessages) {
+    try {
+      const chat = await getClient().getChatById(chatId);
+      await delayRandom(2000, 5000);
+      const messages = await chat.fetchMessages({ limit: 50 });
+
+      const messageToDelete = messages.find(
+        (msg) => msg.id._serialized === msgId
+      );
+
+      if (messageToDelete) {
+        await messageToDelete.delete(true);
+        console.log(`🗑️ Deleted message in ${chatId}`);
+      } else {
+        console.log(
+          `⚠️ Message ${msgId} not found in ${chatId}, might be too old.`
+        );
+      }
+      await delayRandom();
+    } catch (error) {
+      console.log(`❌ Failed to delete message in ${chatId}: ${error.message}`);
+    }
+  }
+
+  sentMessages = [];
+  saveSentMessages(sentMessages);
 }
 
 async function logout() {
@@ -235,5 +288,6 @@ module.exports = {
   getGroupContacts,
   getContactsFromMultipleGroups,
   sendMessagesFromExcel,
+  deleteSentMessages,
   logout,
 };

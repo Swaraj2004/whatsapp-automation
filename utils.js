@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
 const { MessageMedia } = require("whatsapp-web.js");
-const { MEDIA_DIR } = require("./consts.js");
+const { MEDIA_DIR, SENT_MESSAGES_FILE } = require("./consts.js");
 
 function getClient() {
   return require("./script.js").client;
@@ -42,10 +42,23 @@ function askQuestion(query) {
   });
 }
 
+function loadSentMessages() {
+  if (fs.existsSync(SENT_MESSAGES_FILE)) {
+    return JSON.parse(fs.readFileSync(SENT_MESSAGES_FILE, "utf-8"));
+  }
+  return [];
+}
+
+function saveSentMessages(messages) {
+  fs.writeFileSync(SENT_MESSAGES_FILE, JSON.stringify(messages, null, 2));
+}
+
 module.exports = {
   askQuestion,
   delayRandom,
   getMediaFiles,
   getRandomInt,
   getClient,
+  loadSentMessages,
+  saveSentMessages,
 };
