@@ -162,9 +162,6 @@ async function getContactsFromMultipleGroups() {
   console.log(`✅ Contacts saved to ${MULTIPLE_GROUP_CONTACTS_FILE}`);
 }
 
-// Store sent messages
-let sentMessages = loadSentMessages();
-
 async function sendMessagesFromExcel(fileName, idColumn) {
   if (!fs.existsSync(fileName)) {
     console.log(
@@ -187,6 +184,9 @@ async function sendMessagesFromExcel(fileName, idColumn) {
 
   const message = fs.readFileSync(MESSAGE_FILE, "utf-8").trim();
   const mediaFiles = getMediaFiles();
+
+  const sentMessages = [];
+  saveSentMessages(sentMessages);
 
   let sentCount = 0; // Track sent messages
 
