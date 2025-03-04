@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-const readline = require("readline");
+const readlineSync = require("readline-sync");
 const { MessageMedia } = require("whatsapp-web.js");
-const { MEDIA_DIR, SENT_MESSAGES_FILE } = require("./consts.js");
+const { MEDIA_DIR, SENT_MESSAGES_FILE, PASSWORD } = require("./consts.js");
 
 function getClient() {
   return require("./script.js").client;
@@ -29,17 +29,30 @@ function getMediaFiles() {
   });
 }
 
-function askQuestion(query) {
-  return new Promise((resolve) => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
+async function verifyPassword() {
+  while (true) {
+    const input = readlineSync.question("\nEnter password to continue: ", {
+      hideEchoBack: true, // Hide typed characters
+      mask: "*", // Show '*' instead of characters
     });
-    rl.question(query, (answer) => {
-      rl.close();
-      resolve(answer.trim());
-    });
-  });
+
+    if (input === PASSWORD) {
+      console.log("✅ Access granted!");
+      break;
+    } else {
+      console.log("❌ Incorrect password! Try again.");
+    }
+  }
+}
+
+function askQuestion(query, hideInput = false) {
+  if (hideInput) {
+    return readlineSync
+      .question(query, { hideEchoBack: true, mask: "*" })
+      .trim();
+  } else {
+    return readlineSync.question(query).trim();
+  }
 }
 
 function loadSentMessages() {
@@ -54,11 +67,12 @@ function saveSentMessages(messages) {
 }
 
 module.exports = {
-  askQuestion,
-  delayRandom,
-  getMediaFiles,
-  getRandomInt,
   getClient,
+  delayRandom,
+  getRandomInt,
+  getMediaFiles,
+  verifyPassword,
+  askQuestion,
   loadSentMessages,
   saveSentMessages,
 };

@@ -1,13 +1,11 @@
 const path = require("path");
 
-// Define base directory for storing data
 const DATA_FOLDER = "whatsapp-automator-data";
 const BASE_DIR = path.join(process.cwd(), DATA_FOLDER);
 const SESSION_PATH = path.join(BASE_DIR, "session");
 const MEDIA_DIR = path.join(BASE_DIR, "media");
-const SENT_MESSAGES_FILE = path.join(BASE_DIR, "sent_messages.json");
 
-// Define absolute paths for files
+const SENT_MESSAGES_FILE = path.join(BASE_DIR, "sent_messages.json");
 const MESSAGE_FILE = path.join(BASE_DIR, "message.txt");
 const GROUPS_FILE = path.join(BASE_DIR, "groups.xlsx");
 const CONTACTS_FILE = path.join(BASE_DIR, "contacts.xlsx");
@@ -18,6 +16,8 @@ const MULTIPLE_GROUP_CONTACTS_FILE = path.join(
 );
 const CHROME_PATH =
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+
+const PASSWORD = "password";
 
 module.exports = {
   DATA_FOLDER,
@@ -31,4 +31,5 @@ module.exports = {
   GROUP_CONTACTS_FILE,
   MULTIPLE_GROUP_CONTACTS_FILE,
   CHROME_PATH,
+  PASSWORD,
 };

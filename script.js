@@ -1,7 +1,7 @@
 const fs = require("fs");
 const qrcode = require("qrcode-terminal");
 const { Client, LocalAuth } = require("whatsapp-web.js");
-const { askQuestion } = require("./utils.js");
+const { askQuestion, verifyPassword } = require("./utils.js");
 const {
   BASE_DIR,
   CHROME_PATH,
@@ -39,6 +39,8 @@ client.on("qr", (qr) => {
 
 client.on("ready", async () => {
   console.log("✅ Client is ready!");
+
+  await verifyPassword();
 
   while (true) {
     const action = await askQuestion(
