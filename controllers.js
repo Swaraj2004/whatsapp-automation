@@ -29,7 +29,9 @@ async function saveGroupsToExcel() {
       let inviteLink = "N/A";
 
       try {
-        inviteLink = `https://chat.whatsapp.com/${await chat.getInviteCode()}`;
+        inviteLink = chat.groupMetadata.announce
+          ? "N/A"
+          : `https://chat.whatsapp.com/${await chat.getInviteCode()}`;
       } catch (error) {
         console.log(
           `⚠️ Failed to get invite link for ${chat.name}: ${error.message}`
@@ -40,6 +42,7 @@ async function saveGroupsToExcel() {
         name: chat.name,
         group_id: chat.id._serialized,
         invite_link: inviteLink,
+        admin_only: chat.groupMetadata.announce,
       });
 
       await delayRandom();
@@ -188,6 +191,11 @@ async function sendMessagesFromExcel(fileName, idColumn) {
   let sentCount = 0; // Track sent messages
 
   for (const entry of entries) {
+    if (entry.hasOwnProperty("admin_only") && entry.admin_only === true) {
+      console.log(`⚠️ Skipping non-admin entry: ${entry.name}`);
+      continue;
+    }
+
     try {
       if (message) {
         const sentMsg = await getClient().sendMessage(entry[idColumn], message);
