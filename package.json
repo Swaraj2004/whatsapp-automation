@@ -1,4 +1,7 @@
 {
+  "name": "whatsapp-automation",
+  "version": "1.0.0",
+  "description": "WhatsApp Automation Bot",
   "dependencies": {
     "qrcode-terminal": "^0.12.0",
     "readline-sync": "^1.4.10",

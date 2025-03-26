@@ -43,6 +43,7 @@ async function saveGroupsToExcel() {
         group_id: chat.id._serialized,
         invite_link: inviteLink,
         admin_only: chat.groupMetadata.announce,
+        total_members: chat.groupMetadata.participants.length,
       });
 
       await delayRandom();
@@ -237,7 +238,7 @@ async function sendMessagesFromExcel(fileName, idColumn) {
 }
 
 async function deleteSentMessages() {
-  sentMessages = loadSentMessages();
+  let sentMessages = loadSentMessages();
 
   if (sentMessages.length === 0) {
     console.log("❌ No messages to delete!");
