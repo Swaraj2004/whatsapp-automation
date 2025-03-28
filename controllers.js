@@ -26,27 +26,17 @@ async function saveGroupsToExcel() {
 
   for (const chat of chats) {
     if (chat.isGroup) {
-      let inviteLink = "N/A";
-
-      try {
-        inviteLink = chat.groupMetadata.announce
-          ? "N/A"
-          : `https://chat.whatsapp.com/${await chat.getInviteCode()}`;
-      } catch (error) {
-        console.log(
-          `⚠️ Failed to get invite link for ${chat.name}: ${error.message}`
-        );
-      }
+      const adminNumbers = chat.groupMetadata.participants
+        .filter((p) => p.isAdmin || p.isSuperAdmin)
+        .map((p) => p.id._serialized.split("@")[0]);
 
       groups.push({
         name: chat.name,
         group_id: chat.id._serialized,
-        invite_link: inviteLink,
         admin_only: chat.groupMetadata.announce,
         total_members: chat.groupMetadata.participants.length,
+        admin_numbers: adminNumbers.join(", "),
       });
-
-      await delayRandom();
     }
   }
 
